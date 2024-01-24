@@ -47,7 +47,7 @@ jobs:
             bash
             zsh
           cache-environment: true
-          cache-environment-key: ${{ runner.os }}-micromamba-${{ hashFiles('environment-cpu.yml') }}
+          cache-environment-key: ${{ runner.os }}-micromamba-${{ matrix.python-version }}-${{ hashFiles('environment-cpu.yml') }}
           cache-downloads: false
           post-cleanup: "all"
 
@@ -61,7 +61,7 @@ jobs:
         uses: mamba-org/setup-micromamba@v1
         with:
           environment-file: environment-cpu.yml
-          cache-environment-key: ${{ runner.os }}-micromamba-${{ hashFiles('environment-cpu.yml') }}
+          cache-environment-key: ${{ runner.os }}-micromamba-${{ matrix.python-version }}-${{ hashFiles('environment-cpu.yml') }}
 
       - name: Check with pre-commit
         uses: pre-commit/action@v3.0.0
@@ -76,7 +76,7 @@ jobs:
         uses: mamba-org/setup-micromamba@v1
         with:
           environment-file: environment-cpu.yml
-          cache-environment-key: ${{ runner.os }}-micromamba-${{ hashFiles('environment-cpu.yml') }}
+          cache-environment-key: ${{ runner.os }}-micromamba-${{ matrix.python-version }}-${{ hashFiles('environment-cpu.yml') }}
 
       - name: Test with PyTest
         shell: bash -l {0}
