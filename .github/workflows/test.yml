@@ -1,8 +1,12 @@
-name: Test with PyTest
+name: Linting, (type-)checking, testing
 
 on:
+  pull_request:
   push:
+    branches:
+      - main
     paths:
+      - ".github/workflows/test.yml"
       - "TODO_package_name/**"
       - "tests/**"
 
@@ -16,21 +20,22 @@ jobs:
       - uses: snok/latest-python-versions@v1
         id: get-python-versions-action
         with:
-          min-version: 3.11
+          min-version: "3.11"
           include-prereleases: false
 
-  test:
+  setup-env:
     needs: get-python-versions
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: ${{ fromJson(needs.get-python-versions.outputs.python-matrix) }}
+      fail-fast: false
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -42,7 +47,36 @@ jobs:
             bash
             zsh
           cache-environment: true
+          cache-environment-key: ${{ runner.os }}-micromamba-${{ hashFiles('environment-cpu.yml') }}
+          cache-downloads: false
           post-cleanup: "all"
+
+  pre-commit:
+    needs: setup-env
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Restore Micromamba environment from cache
+        uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-file: environment-cpu.yml
+          cache-environment-key: ${{ runner.os }}-micromamba-${{ hashFiles('environment-cpu.yml') }}
+
+      - name: Check with pre-commit
+        uses: pre-commit/action@v3.0.0
+
+  pytest:
+    needs: setup-env
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Restore Micromamba environment from cache
+        uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-file: environment-cpu.yml
+          cache-environment-key: ${{ runner.os }}-micromamba-${{ hashFiles('environment-cpu.yml') }}
 
       - name: Test with PyTest
         shell: bash -l {0}
