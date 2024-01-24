@@ -1,8 +1,12 @@
 name: Python Package using Mamba
 
 on:
+  pull_request:
   push:
+    branches:
+      - main
     paths:
+      - ".github/workflows/package.yml"
       - "environment-cpu.yml"
       - "setup.cfg"
 
@@ -16,7 +20,7 @@ jobs:
       - uses: snok/latest-python-versions@v1
         id: get-python-versions-action
         with:
-          min-version: 3.11
+          min-version: "3.11"
           include-prereleases: false
 
   build-linux:
