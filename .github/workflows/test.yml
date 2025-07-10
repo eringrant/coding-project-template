@@ -88,7 +88,12 @@ jobs:
       - name: Install the project
         run: uv sync --all-extras --dev
 
-      - name: Test with PyTest
+      - name: Test with PyTest (Windows)
+        if: runner.os == 'Windows'
+        run: uv run pytest --cov=TODO_package_name/ tests/; if ($LASTEXITCODE -notin @(0,5)) { exit $LASTEXITCODE }
+
+      - name: Test with PyTest (Unix)
+        if: runner.os != 'Windows'
         run: uv run pytest --cov=TODO_package_name/ tests/ || [ $? -eq 5 ]
 
       - name: Minimize uv cache
