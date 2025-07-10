@@ -11,8 +11,10 @@ on:
       - ".github/workflows/test.yml"
       - "TODO_package_name/**"
       - "tests/**"
+
 env:
   UV_CACHE_DIR: ${{ github.workspace }}/.cache/uv
+
 jobs:
   get-python-versions:
     runs-on: ubuntu-latest
@@ -24,18 +26,26 @@ jobs:
         with:
           min-version: "3.11"
           include-prereleases: false
+
   pre-commit:
     needs: get-python-versions
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Get Python version from pre-commit config
+        id: python-version
+        run: |
+          version=$(grep -E "python:|language_version:" .pre-commit-config.yaml | head -1 | sed -E 's/.*python:|.*language_version://g' | tr -d ' "'"'"'')
+          echo "version=$version" >> $GITHUB_OUTPUT
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ steps.python-version.outputs.version }}
       - name: Install uv
         uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
-      - name: Get Python version
-        id: python-version
-        run: echo "version=$(python3 --version | cut -d' ' -f2)" >> $GITHUB_OUTPUT
+          python-version: ${{ steps.python-version.outputs.version }}
       - name: Restore uv cache
         uses: actions/cache@v4
         with:
@@ -51,6 +61,7 @@ jobs:
         run: uv run pre-commit run --all-files
       - name: Minimize uv cache
         run: uv cache prune --ci
+
   pytest:
     needs: get-python-versions
     runs-on: ${{ matrix.os }}
