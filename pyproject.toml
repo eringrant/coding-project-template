@@ -1,27 +1,43 @@
-[build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
+[project]
+name = "TODO_package_name"
+version = "0.0.1"
+author = "Erin Grant"
+url = "https://github.com/eringrant/TODO_package_name"
+description = "TODO"
 
-[tool.black]
-target-version = ['py311', 'py312']
-line-length = 88
-include = '\.pyi?$'
-exclude = '''
-/(
-    \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | _build
-  | buck-out
-  | build
-  | dist
-)/
-'''
+requires-python = ">=3.11"
+dependencies = [
+  "equinox>=0.12.2",
+  # GPU on Linux.
+  "jax[cuda12]>=0.4.29 ; sys_platform == 'linux'",
+  "nvidia-cublas-cu12>=12.9.0.13 ; sys_platform == 'linux'", # https://github.com/jax-ml/jax/issues/29042
+  # CPU everywhere else.
+  "jax>=0.4.29 ; sys_platform != 'linux'",
+  # No more `jaxlib` support for Intel Macs.
+  "jaxlib>=0.4,<0.5 ; sys_platform == 'darwin' and platform_machine == 'x86_64'",
+  # Latest versions on Apple Silicon, Windows
+  "jaxlib>=0.6.1 ; sys_platform != 'darwin' or platform_machine != 'x86_64'",
+  "jaxtyping>=0.3.2",
+  "matplotlib>=3.10.3",
+  "optax>=0.2.4",
+  "optimistix>=0.0.10",
+  "treescope>=0.1.9",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "ipdb>=0.13.13",
+    "pre-commit>=4.2.0",
+    "pytest>=8.4.1",
+    "pytest-cov>=6.2.1",
+]
 
 [tool.ruff]
-target-version = 'py311'
+target-version = 'py313'
 
 # Rule sets.
 select = ["ALL"]
@@ -45,30 +61,35 @@ ignore = [
 fixable = ["ALL"]
 unfixable = []
 
-# Exclude a variety of commonly ignored directories.
-include = ["*.py", "*.pyi", "**/pyproject.toml", "*.ipynb"]
+# In/exclude a variety of commonly ignored directories.
+include = [
+  "pyproject.toml", 
+  "*.py", 
+  "*.pyi", 
+  "*.ipynb",
+]
 exclude = [
-    ".bzr",
-    ".direnv",
-    ".eggs",
-    ".git",
-    ".git-rewrite",
-    ".hg",
-    ".mypy_cache",
-    ".nox",
-    ".pants.d",
-    ".pytype",
-    ".ruff_cache",
-    ".svn",
-    ".tox",
-    ".venv",
-    "__pypackages__",
-    "_build",
-    "buck-out",
-    "build",
-    "dist",
-    "node_modules",
-    "venv",
+  ".bzr",
+  ".direnv",
+  ".eggs",
+  ".git",
+  ".git-rewrite",
+  ".hg",
+  ".mypy_cache",
+  ".nox",
+  ".pants.d",
+  ".pytype",
+  ".ruff_cache",
+  ".svn",
+  ".tox",
+  ".venv",
+  "__pypackages__",
+  "_build",
+  "buck-out",
+  "build",
+  "dist",
+  "node_modules",
+  "venv",
 ]
 per-file-ignores = {}
 

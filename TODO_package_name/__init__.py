@@ -1,4 +1,5 @@
 """Module-wide constants for `TODO_package_name`."""
+
 # ruff: noqa: N999
 import os
 from pathlib import Path
@@ -18,7 +19,7 @@ Path.mkdir(TMP_DIR, parents=True, exist_ok=True)
 
 scratch_home = os.environ.get("SCRATCH_HOME")
 SCRATCH_DIR = (
-  Path(scratch_home, "TODO_package_name") if scratch_home is not None else TMP_DIR
+    Path(scratch_home, "TODO_package_name") if scratch_home is not None else TMP_DIR
 )
 Path.mkdir(SCRATCH_DIR, parents=True, exist_ok=True)
 

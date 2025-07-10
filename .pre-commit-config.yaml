@@ -1,31 +1,37 @@
 default_language_version:
-  python: python3.11
+  python: python3.13
 
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.0.287
+    rev: v0.12.2
     hooks:
-      - id: ruff
+      - id: ruff-format
+        types_or: [python, pyi, jupyter]
+      - id: ruff-check
         args: [--fix, --exit-non-zero-on-fix]
         types_or: [python, pyi, jupyter]
 
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.5.1
+  # https://github.com/astral-sh/ty/issues/269
+  - repo: local
     hooks:
-      - id: mypy
-
-  - repo: https://github.com/eringrant/black
-    rev: a29647f90feb3a1cfbc1c141810cd5f110ec6b54
-    hooks:
-      - id: black
+      - id: ty-check
+        name: ty-check
+        language: python
+        entry: ty check
+        pass_filenames: false
+        args: [--python=.venv/]
+        additional_dependencies: [ty]
 
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.0.3
+    rev: v4.0.0-alpha.8
     hooks:
       - id: prettier
+        additional_dependencies:
+          - prettier@v4.0.0-alpha.8
+          - "prettier-plugin-toml@2.0.1"
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v5.0.0
     hooks:
       - id: check-added-large-files
       - id: check-builtin-literals
