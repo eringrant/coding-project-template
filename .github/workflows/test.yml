@@ -35,7 +35,12 @@ jobs:
       - name: Get Python version from pre-commit config
         id: python-version
         run: |
-          version=$(grep -E "python:|language_version:" .pre-commit-config.yaml | head -1 | sed -E 's/.*python:|.*language_version://g' | tr -d ' "'"'"'')
+          if [ -f .pre-commit-config.yaml ]; then
+            version=$(yq eval '.default_language_version.python // .repos[].hooks[].language_version // "3.11"' .pre-commit-config.yaml | head -1)
+          else
+            version="3.11"
+          fi
+          echo "Detected Python version: $version"
           echo "version=$version" >> $GITHUB_OUTPUT
       - name: Set up Python
         uses: actions/setup-python@v5
