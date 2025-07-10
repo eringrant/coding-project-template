@@ -89,7 +89,7 @@ jobs:
         run: uv sync --all-extras --dev
 
       - name: Test with PyTest
-        run: uv run pytest --cov=TODO_package_name/ --cov-fail-under=0 tests/
+        run: uv run pytest --cov=TODO_package_name/ tests/
 
       - name: Minimize uv cache
         run: uv cache prune --ci
